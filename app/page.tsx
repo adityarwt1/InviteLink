@@ -95,10 +95,19 @@ export default function LoginPage() {
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-
+  const checktoke = async () => {
+    try {
+      const { success } = await fetch("/api/token").then((res) => res.json());
+      if (success) {
+        router.push("/profile");
+      }
+    } catch (error) {
+      console.log((error as Error).message);
+    }
+  };
   useEffect(() => {
-    console.log(username, password);
-  }, [username, password]);
+    checktoke();
+  }, []);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
