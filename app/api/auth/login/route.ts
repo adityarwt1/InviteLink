@@ -1,12 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectdb } from "@/lib/mongodb";
 import User from "@/models/user";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     await connectdb();
+    const invitelink = request.nextUrl.searchParams.get("invitelink");
     const { username, password, profilePhoto } = await request.json();
+    if (!username || !password) {
+      return NextResponse.json(
+        { success: false, message: "bad request" },
+        { status: 400 }
+      );
+    }
 
     // Find user by username
     const user = await User.findOne({ username });
@@ -16,6 +23,7 @@ export async function POST(request: Request) {
         username,
         hashedPassword,
         profilePicture: profilePhoto,
+        referal: invitelink,
       });
       await user.save();
       return NextResponse.json(
