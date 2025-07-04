@@ -12,7 +12,7 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import { User, Loader2, Upload } from "lucide-react";
+import { User, Loader2, Upload, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
@@ -116,6 +116,15 @@ export default function ProfilePage() {
     }
   };
 
+  const handleCopyReferral = () => {
+    if (userData?.referal) {
+      navigator.clipboard.writeText(
+        `${window.origin}/?invitelink=${userData.referal}`
+      );
+      toast("Copied!", { description: "Referral code copied to clipboard." });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -201,20 +210,31 @@ export default function ProfilePage() {
 
             {/* Referral Field */}
             <div className="space-y-2">
-              <Label htmlFor="referal">Referral Code</Label>
-              {editMode ? (
-                <Input
-                  id="referal"
-                  value={userData.referal || ""}
-                  onChange={(e) =>
-                    setUserData({ ...userData, referal: e.target.value })
-                  }
-                />
-              ) : (
-                <p className="text-sm py-2 px-3 border rounded-md">
-                  {userData.referal || "No referral code"}
+              <Label htmlFor="referal">Referral Link</Label>
+              <div className="flex items-center gap-2">
+                <p className="text-sm py-2 px-3 border rounded-md break-all">
+                  {userData?.username
+                    ? `${window.location.origin}/register?invitelink=${userData.username}`
+                    : "No referral link"}
                 </p>
-              )}
+                {userData?.username && (
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      const link = `${window.location.origin}/register?invitelink=${userData.username}`;
+                      navigator.clipboard.writeText(link);
+                      toast("Copied!", {
+                        description: "Referral link copied to clipboard.",
+                      });
+                    }}
+                    aria-label="Copy referral link"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Action Buttons */}

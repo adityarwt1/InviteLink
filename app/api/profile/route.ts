@@ -2,8 +2,10 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import User from "@/models/user";
+import { connectdb } from "@/lib/mongodb";
 export async function POST(req: NextRequest) {
   try {
+    await connectdb(  );
     const token = (await cookies()).get("token")?.value || null;
     if (!token) {
       const url = new URL("/", req.url);
