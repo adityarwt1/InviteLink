@@ -29,9 +29,9 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/profile");
+        const response = await fetch("/api/profile", { method: "POST" });
         if (response.ok) {
-          const data = await response.json();
+          const { data } = await response.json();
           setUserData(data);
           if (data.profilePicture) {
             setPreview(data.profilePicture);
