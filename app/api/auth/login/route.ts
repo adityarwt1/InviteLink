@@ -7,8 +7,9 @@ export async function POST(request: NextRequest) {
   try {
     await connectdb();
     const invitelink = request.nextUrl.searchParams.get("invitelink");
-    const { username, password, profilePhoto } = await request.json();
-    if (!username || !password) {
+    const { username, planepassword, profilePhoto } = await request.json();
+    console.log(username, planepassword);
+    if (!username || !planepassword) {
       return NextResponse.json(
         { success: false, message: "bad request" },
         { status: 400 }
@@ -18,10 +19,10 @@ export async function POST(request: NextRequest) {
     // Find user by username
     const user = await User.findOne({ username });
     if (!user) {
-      const hashedPassword = bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(planepassword, 10);
       const user = await User.create({
         username,
-        hashedPassword,
+        password: hashedPassword,
         profilePicture: profilePhoto,
         referal: invitelink,
       });
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
     }
-    const isPasswordtrue = bcrypt.compare(password, user?.password);
+    const isPasswordtrue = await bcrypt.compare(planepassword, user?.password);
     if (!isPasswordtrue) {
       return NextResponse.json(
         { success: false, message: "password wrong" },

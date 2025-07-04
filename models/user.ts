@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 interface User extends Document {
-  name: string;
   username: string;
   password: string;
   referal: string;
@@ -9,10 +8,6 @@ interface User extends Document {
 }
 
 const userschema: Schema<User> = new Schema({
-  name: {
-    type: String,
-    required: [true, "Please provide the name"],
-  },
   username: {
     type: String,
     required: [true, "please provide the username"],
