@@ -16,3 +16,19 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    (await cookies()).delete("token");
+    return NextResponse.json(
+      { message: "successfully logout" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log((error as Error).message);
+    return NextResponse.json(
+      { message: "Internal server issue" },
+      { status: 500 }
+    );
+  }
+}

@@ -12,8 +12,9 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import { User, Loader2, Upload, Copy } from "lucide-react";
+import { User, Loader2, Upload, Copy, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<{
@@ -25,6 +26,8 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -125,6 +128,31 @@ export default function ProfilePage() {
     }
   };
 
+  const handleLogout = async () => {
+    setLogoutLoading(true);
+    try {
+      const response = await fetch("/api/token", {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast("Success", {
+          description: "Logged out successfully",
+        });
+        // Redirect to home page or login page
+        router.push("/");
+      } else {
+        throw new Error("Failed to logout");
+      }
+    } catch (error) {
+      toast("Error", {
+        description: "Could not logout. Please try again.",
+      });
+    } finally {
+      setLogoutLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -152,10 +180,28 @@ export default function ProfilePage() {
     <div className="container mx-auto py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">Your Profile</CardTitle>
-          <CardDescription>
-            Manage your account information and settings
-          </CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">Your Profile</CardTitle>
+              <CardDescription>
+                Manage your account information and settings
+              </CardDescription>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleLogout}
+              disabled={logoutLoading}
+              className="flex items-center gap-2"
+            >
+              {logoutLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LogOut className="w-4 h-4" />
+              )}
+              Logout
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
