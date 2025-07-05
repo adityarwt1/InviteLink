@@ -5,7 +5,7 @@ import User from "@/models/user";
 import { connectdb } from "@/lib/mongodb";
 export async function POST(req: NextRequest) {
   try {
-    await connectdb(  );
+    await connectdb();
     const token = (await cookies()).get("token")?.value || null;
     if (!token) {
       const url = new URL("/", req.url);
@@ -30,6 +30,26 @@ export async function POST(req: NextRequest) {
     console.log((error as Error).message);
     return NextResponse.json(
       { message: "Internal sever issue" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { formData } = await req.json();
+    if (!formData) {
+      return NextResponse.json({ message: "bad request" }, { status: 400 });
+    }
+    console.log(formData);
+    return NextResponse.json(
+      { message: "Profile update successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error as Error);
+    return NextResponse.json(
+      { message: "Internal server issue" },
       { status: 500 }
     );
   }
