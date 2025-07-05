@@ -25,7 +25,6 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const invitelink = searchParams.get("invitelink");
-  console.log("this is the invite link", invitelink);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

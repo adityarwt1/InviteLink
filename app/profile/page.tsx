@@ -27,7 +27,25 @@ export default function ProfilePage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [senderdata, setSenderdata] = useState<{
+    username?: string;
+    profilePicture?: string;
+  }>({});
+  const [usersOfCurrentUser, setUsersOfcurrentUser] = useState([]);
   const router = useRouter();
+
+  const fetchUsers = async () => {
+    if (!userData?.referal) return;
+    try {
+      const { users } = await fetch(
+        `/api/fetchlinkusers?username=${userData.username}`,
+        { method: "POST" }
+      ).then((res) => res.json());
+      setUsersOfcurrentUser(users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,6 +56,15 @@ export default function ProfilePage() {
           setUserData(data);
           if (data.profilePicture) {
             setPreview(data.profilePicture);
+          }
+          if (data.referal) {
+            const { user } = await fetch(
+              `/api/fetchsenderdata?username=${data.referal}`,
+              {
+                method: "POST",
+              }
+            ).then((res) => res.json());
+            setSenderdata(user);
           }
         } else {
           throw new Error("Failed to fetch profile data");
@@ -53,6 +80,10 @@ export default function ProfilePage() {
 
     fetchUserData();
   }, [toast]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [userData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -177,7 +208,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 space-y-6">
+      {/* Main Profile Card */}
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -320,6 +352,89 @@ export default function ProfilePage() {
               )}
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Sender Information Card */}
+      {senderdata && senderdata.username && (
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-xl">Who Invited You</CardTitle>
+            <CardDescription>
+              Information about the user who invited you to join
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16">
+                {senderdata.profilePicture ? (
+                  <AvatarImage src={senderdata.profilePicture} alt="Sender" />
+                ) : (
+                  <AvatarFallback className="bg-gray-200">
+                    <User className="w-8 h-8 text-gray-500" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-lg">{senderdata.username}</h3>
+                <p className="text-sm text-gray-600">
+                  Invited you to join the platform
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Users You've Invited Card */}
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-xl">People You've Invited</CardTitle>
+          <CardDescription>
+            Users who joined using your invite link ({usersOfCurrentUser.length}
+            )
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {usersOfCurrentUser.length > 0 ? (
+            <div className="space-y-3">
+              {usersOfCurrentUser.map((user: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 p-3 border rounded-lg"
+                >
+                  <Avatar className="w-12 h-12">
+                    {user.profilePicture ? (
+                      <AvatarImage
+                        src={user.profilePicture}
+                        alt={user.username}
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-gray-200">
+                        <User className="w-6 h-6 text-gray-500" />
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{user.username}</h4>
+                    <p className="text-sm text-gray-600">
+                      Joined using your invite link
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <User className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-600">
+                No one has used your invite link yet
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Share your invite link to start building your network!
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
