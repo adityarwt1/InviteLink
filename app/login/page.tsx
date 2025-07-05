@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import {
 import { Loader2, Upload, User } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function LoginPage() {
+const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -198,4 +198,14 @@ export default function LoginPage() {
       </Card>
     </div>
   );
-}
+};
+
+const LoginContent = () => {
+  return (
+    <Suspense fallback={<div className="animate-bounce">Loading...</div>}>
+      <LoginPage />
+    </Suspense>
+  );
+};
+
+export default LoginContent;
