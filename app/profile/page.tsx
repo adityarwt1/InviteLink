@@ -35,10 +35,9 @@ export default function ProfilePage() {
   const router = useRouter();
 
   const fetchUsers = async () => {
-    if (!userData?.referal) return;
     try {
       const { users } = await fetch(
-        `/api/fetchlinkusers?username=${userData.username}`,
+        `/api/fetchlinkusers?username=${userData?.username}`,
         { method: "POST" }
       ).then((res) => res.json());
       setUsersOfcurrentUser(users);
