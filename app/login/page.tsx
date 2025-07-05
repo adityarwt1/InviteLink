@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,9 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const invitelink = searchParams.get("invitelink");
+  console.log("this is the invite link", invitelink);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +33,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const login = await fetch("/api/auth/login", {
+      const login = await fetch(`/api/auth/login?invitelink=${invitelink}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

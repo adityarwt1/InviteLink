@@ -122,7 +122,7 @@ export default function ProfilePage() {
   const handleCopyReferral = () => {
     if (userData?.referal) {
       navigator.clipboard.writeText(
-        `${window.origin}/?invitelink=${userData.referal}`
+        `${window.origin}/login?invitelink=${userData.referal}`
       );
       toast("Copied!", { description: "Referral code copied to clipboard." });
     }
@@ -259,9 +259,7 @@ export default function ProfilePage() {
               <Label htmlFor="referal">Referral Link</Label>
               <div className="flex items-center gap-2">
                 <p className="text-sm py-2 px-3 border rounded-md break-all">
-                  {userData?.username
-                    ? `${window.location.origin}/register?invitelink=${userData.username}`
-                    : "No referral link"}
+                  Copy Invite Link
                 </p>
                 {userData?.username && (
                   <Button
@@ -269,7 +267,7 @@ export default function ProfilePage() {
                     size="icon"
                     variant="ghost"
                     onClick={() => {
-                      const link = `${window.location.origin}/register?invitelink=${userData.username}`;
+                      const link = `${window.location.origin}/login?invitelink=${userData.username}`;
                       navigator.clipboard.writeText(link);
                       toast("Copied!", {
                         description: "Referral link copied to clipboard.",
